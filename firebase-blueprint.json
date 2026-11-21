@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account metadata document serving as parent root for user-owned fund watchlist and holdings.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name shown in profile header",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when profile was first created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest update"
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "WatchlistItem": {
+      "title": "WatchlistItem",
+      "description": "A QDII or Nasdaq-related fund tracked in a user's personal watchlist.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "fundCode": {
+          "type": "string",
+          "description": "6-digit Chinese mutual fund code",
+          "minLength": 6,
+          "maxLength": 6,
+          "pattern": "^[0-9]{6}$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Fund display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "category": {
+          "type": "string",
+          "description": "Fund category classification",
+          "enum": ["index_ndx", "global_active", "qdii_other"]
+        },
+        "beta": {
+          "type": "number",
+          "description": "Estimated Nasdaq-100 sensitivity multiplier (0.1 to 2.0)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when added to watchlist"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest modification"
+        }
+      },
+      "required": ["ownerId", "fundCode", "name", "category", "beta", "createdAt", "updatedAt"]
+    },
+    "Holding": {
+      "title": "Holding",
+      "description": "User's share holding and average cost basis for a tracked fund.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "fundCode": {
+          "type": "string",
+          "description": "6-digit Chinese mutual fund code",
+          "minLength": 6,
+          "maxLength": 6,
+          "pattern": "^[0-9]{6}$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Fund display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "shares": {
+          "type": "number",
+          "description": "Number of fund shares held (must be > 0 and <= 1000000000)"
+        },
+        "costNav": {
+          "type": "number",
+          "description": "Average holding cost per share in CNY (must be > 0 and <= 100000)"
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional user memo for this holding",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when holding was first logged"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when holding was last updated"
+        }
+      },
+      "required": ["ownerId", "fundCode", "name", "shares", "costNav", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Root user document owning watchlist and holdings subcollections."
+    },
+    "/users/{userId}/watchlist/{fundCode}": {
+      "schema": { "$ref": "#/entities/WatchlistItem" },
+      "description": "User's personal tracked Nasdaq/QDII funds."
+    },
+    "/users/{userId}/holdings/{fundCode}": {
+      "schema": { "$ref": "#/entities/Holding" },
+      "description": "User's share count and cost basis records per fund."
+    }
+  }
+}

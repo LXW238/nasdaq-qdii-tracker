@@ -1,0 +1,6 @@
+{
+  "name": "纳指精选 - QDII基金实时估值与持仓盈亏",
+  "description": "追踪易方达全球精选、广发全球精选及纳斯达克100相关QDII基金的实时净值、盘中美股映射估算、多周期走势图分析与云端同步持仓盈亏计算。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
